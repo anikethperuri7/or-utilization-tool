@@ -1,6 +1,6 @@
 # OR / Procedure Room Utilization Tool
 
-[!\[CI](https://github.com/YOUR\_USERNAME/or-utilization-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/or-utilization-tool/actions/workflows/ci.yml)
+[![CI](https://github.com/anikethperuri7/or-utilization-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/anikethperuri7/or-utilization-tool/actions/workflows/ci.yml)
 [!\[Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [!\[License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
