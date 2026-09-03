@@ -23,7 +23,9 @@ def test_load_schedule_cancelled_case_has_null_actuals(tiny_schedule_df):
 
 def test_load_schedule_missing_required_column_raises(tmp_path):
     bad_csv = tmp_path / "bad.csv"
-    pd.DataFrame({"room_id": ["OR-1"], "date": ["2025-01-06"]}).to_csv(bad_csv, index=False)
+    pd.DataFrame({"room_id": ["OR-1"], "date": ["2025-01-06"]}).to_csv(
+        bad_csv, index=False
+    )
     with pytest.raises(ValueError, match="Missing required column"):
         load_schedule(bad_csv)
 

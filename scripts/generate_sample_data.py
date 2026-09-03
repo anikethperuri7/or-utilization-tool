@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import argparse
 import random
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 import numpy as np
 import pandas as pd
@@ -78,7 +78,9 @@ def generate(days: int, rooms: int, seed: int = 42) -> pd.DataFrame:
                     break
 
                 proc_name, base_duration = rng.choice(PROCEDURES)
-                sched_duration = max(20, int(np_rng.normal(base_duration, base_duration * 0.1)))
+                sched_duration = max(
+                    20, int(np_rng.normal(base_duration, base_duration * 0.1))
+                )
 
                 sched_start = cursor
                 sched_end = sched_start + sched_duration
@@ -104,7 +106,9 @@ def generate(days: int, rooms: int, seed: int = 42) -> pd.DataFrame:
                     np_rng.normal(sched_duration * overrun_bias, sched_duration * 0.18),
                 )
 
-                actual_start_min = sched_start + start_delay if not is_cancelled else None
+                actual_start_min = (
+                    sched_start + start_delay if not is_cancelled else None
+                )
                 actual_end_min = (
                     actual_start_min + actual_duration if not is_cancelled else None
                 )
@@ -117,8 +121,16 @@ def generate(days: int, rooms: int, seed: int = 42) -> pd.DataFrame:
                         "date": d.isoformat(),
                         "scheduled_start": _minutes_to_time(sched_start),
                         "scheduled_end": _minutes_to_time(sched_end),
-                        "actual_start": _minutes_to_time(actual_start_min) if actual_start_min is not None else "",
-                        "actual_end": _minutes_to_time(actual_end_min) if actual_end_min is not None else "",
+                        "actual_start": (
+                            _minutes_to_time(actual_start_min)
+                            if actual_start_min is not None
+                            else ""
+                        ),
+                        "actual_end": (
+                            _minutes_to_time(actual_end_min)
+                            if actual_end_min is not None
+                            else ""
+                        ),
                         "procedure_type": proc_name,
                         "surgeon_id": surgeon,
                         "status": "cancelled" if is_cancelled else "completed",
@@ -144,14 +156,18 @@ def generate(days: int, rooms: int, seed: int = 42) -> pd.DataFrame:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", default="data/sample_schedule.csv")
-    parser.add_argument("--days", type=int, default=60, help="Number of weekdays to simulate.")
+    parser.add_argument(
+        "--days", type=int, default=60, help="Number of weekdays to simulate."
+    )
     parser.add_argument("--rooms", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
     df = generate(args.days, args.rooms, args.seed)
     df.to_csv(args.out, index=False)
-    print(f"Wrote {len(df)} rows across {args.rooms} rooms x {args.days} weekdays to {args.out}")
+    print(
+        f"Wrote {len(df)} rows across {args.rooms} rooms x {args.days} weekdays to {args.out}"
+    )
 
 
 if __name__ == "__main__":

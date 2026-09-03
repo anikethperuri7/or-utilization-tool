@@ -1,9 +1,10 @@
 """Shared pytest fixtures: a small, hand-crafted schedule CSV with known
 ground-truth values so metric calculations can be checked exactly."""
 
+from pathlib import Path
+
 import pandas as pd
 import pytest
-from pathlib import Path
 
 from or_utilization.loader import load_schedule
 

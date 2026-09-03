@@ -8,9 +8,9 @@ cancellation patterns, and simulates schedule-optimization scenarios to
 estimate how many additional procedures could fit in existing block time.
 """
 
+from .loader import load_schedule
 from .metrics import UtilizationMetrics, compute_metrics
 from .simulate import SimulationResult, simulate_schedule_optimization
-from .loader import load_schedule
 
 __version__ = "0.1.0"
 

@@ -24,7 +24,8 @@ and documents every inference it makes via the `notes` return value.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, date as date_cls
+from datetime import date as date_cls
+from datetime import datetime
 from pathlib import Path
 from typing import Union
 
@@ -109,9 +110,7 @@ def load_schedule(path: Union[str, Path]) -> pd.DataFrame:
     # Build full datetimes for each time column
     for col in TIME_COLUMNS:
         new_col = f"{col}_dt"
-        raw[new_col] = [
-            _combine_date_time(d, t) for d, t in zip(raw["date"], raw[col])
-        ]
+        raw[new_col] = [_combine_date_time(d, t) for d, t in zip(raw["date"], raw[col])]
 
     # Infer status if not provided
     if raw["status"].isna().all():
@@ -152,7 +151,9 @@ def load_schedule(path: Union[str, Path]) -> pd.DataFrame:
     else:
         raw["surgeon_id"] = raw["surgeon_id"].fillna("UNKNOWN")
 
-    raw = raw.sort_values(["room_id", "date", "scheduled_start_dt"]).reset_index(drop=True)
+    raw = raw.sort_values(["room_id", "date", "scheduled_start_dt"]).reset_index(
+        drop=True
+    )
 
     result = LoadResult(df=raw, notes=notes)
     for n in result.notes:

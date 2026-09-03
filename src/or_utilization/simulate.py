@@ -41,6 +41,7 @@ a black box.
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
 
@@ -113,12 +114,11 @@ def simulate_schedule_optimization(
     df["reclaimed_from_turnaround_min"] = (
         df["est_turnaround_gaps"] * turnaround_reduction_min
     )
-    df["reclaimed_from_start_delay_min"] = (
-        df["avg_start_delay_min"].fillna(0).clip(lower=0)
-        * (start_delay_reduction_pct / 100.0)
-    )
-    df["reclaimed_from_overrun_min"] = (
-        df["total_overrun_min"].fillna(0) * (overrun_reduction_pct / 100.0)
+    df["reclaimed_from_start_delay_min"] = df["avg_start_delay_min"].fillna(0).clip(
+        lower=0
+    ) * (start_delay_reduction_pct / 100.0)
+    df["reclaimed_from_overrun_min"] = df["total_overrun_min"].fillna(0) * (
+        overrun_reduction_pct / 100.0
     )
 
     df["total_reclaimed_min"] = (
@@ -150,9 +150,11 @@ def simulate_schedule_optimization(
 
     summary = {
         "scenario_name": scenario_name,
-        "avg_case_length_min_used": round(float(avg_case_length_min), 1)
-        if pd.notna(avg_case_length_min)
-        else None,
+        "avg_case_length_min_used": (
+            round(float(avg_case_length_min), 1)
+            if pd.notna(avg_case_length_min)
+            else None
+        ),
         "total_reclaimed_minutes": round(float(df["total_reclaimed_min"].sum()), 1),
         "total_existing_idle_minutes": round(float(df["existing_idle_min"].sum()), 1),
         "est_additional_cases_from_efficiency_only": round(
@@ -161,9 +163,7 @@ def simulate_schedule_optimization(
         "est_additional_cases_incl_existing_idle": round(
             float(df["est_additional_cases_incl_existing_idle"].sum()), 1
         ),
-        "baseline_utilization_pct": round(
-            float(df["utilization_pct"].mean()), 1
-        ),
+        "baseline_utilization_pct": round(float(df["utilization_pct"].mean()), 1),
         "projected_utilization_pct": round(
             float(new_utilization_pct.clip(upper=100).mean()), 1
         ),
@@ -175,9 +175,11 @@ def simulate_schedule_optimization(
         "start_delay_reduction_pct": start_delay_reduction_pct,
         "overrun_reduction_pct": overrun_reduction_pct,
         "avg_case_length_min": summary["avg_case_length_min_used"],
-        "cases_per_room_day_assumed": round(float(cases_per_room_day), 2)
-        if pd.notna(cases_per_room_day)
-        else None,
+        "cases_per_room_day_assumed": (
+            round(float(cases_per_room_day), 2)
+            if pd.notna(cases_per_room_day)
+            else None
+        ),
     }
 
     return SimulationResult(

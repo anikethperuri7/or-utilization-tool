@@ -1,10 +1,7 @@
 import math
 
-import pandas as pd
-import pytest
-
 from or_utilization.metrics import compute_metrics
-from or_utilization.simulate import simulate_schedule_optimization, compare_scenarios
+from or_utilization.simulate import compare_scenarios, simulate_schedule_optimization
 
 
 def test_zero_improvement_scenario_reclaims_nothing(tiny_schedule_df):
@@ -37,7 +34,9 @@ def test_turnaround_reduction_reclaims_expected_minutes(tiny_schedule_df):
 
 def test_avg_case_length_defaults_when_not_supplied(tiny_schedule_df):
     m = compute_metrics(tiny_schedule_df)
-    sim = simulate_schedule_optimization(m.daily_room_summary, scenario_name="default_case_len")
+    sim = simulate_schedule_optimization(
+        m.daily_room_summary, scenario_name="default_case_len"
+    )
     # occupied 100 min over 2 completed cases -> 50 min avg
     assert math.isclose(sim.assumptions["avg_case_length_min"], 50.0)
 

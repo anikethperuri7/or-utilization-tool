@@ -21,8 +21,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 @dataclass
@@ -53,17 +53,17 @@ def compute_metrics(df: pd.DataFrame) -> UtilizationMetrics:
         df["scheduled_end_dt"] - df["scheduled_start_dt"]
     ).apply(lambda x: _minutes(x))
 
-    df["actual_duration_min"] = (
-        df["actual_end_dt"] - df["actual_start_dt"]
-    ).apply(lambda x: _minutes(x))
+    df["actual_duration_min"] = (df["actual_end_dt"] - df["actual_start_dt"]).apply(
+        lambda x: _minutes(x)
+    )
 
-    df["start_delay_min"] = (
-        df["actual_start_dt"] - df["scheduled_start_dt"]
-    ).apply(lambda x: _minutes(x))
+    df["start_delay_min"] = (df["actual_start_dt"] - df["scheduled_start_dt"]).apply(
+        lambda x: _minutes(x)
+    )
 
-    df["overrun_min"] = (
-        df["actual_end_dt"] - df["scheduled_end_dt"]
-    ).apply(lambda x: _minutes(x))
+    df["overrun_min"] = (df["actual_end_dt"] - df["scheduled_end_dt"]).apply(
+        lambda x: _minutes(x)
+    )
     # Only count positive overrun as "overrun"; negative means finished early
     df["overrun_min_clipped"] = df["overrun_min"].clip(lower=0)
     df["early_finish_min_clipped"] = (-df["overrun_min"]).clip(lower=0)
@@ -100,7 +100,11 @@ def compute_metrics(df: pd.DataFrame) -> UtilizationMetrics:
     for (room, day), grp in df.groupby(["room_id", "date"]):
         block_start = grp["block_start_dt"].min()
         block_end = grp["block_end_dt"].max()
-        block_minutes = _minutes(block_end - block_start) if pd.notna(block_start) and pd.notna(block_end) else np.nan
+        block_minutes = (
+            _minutes(block_end - block_start)
+            if pd.notna(block_start) and pd.notna(block_end)
+            else np.nan
+        )
 
         completed_grp = grp[grp["is_completed"]]
         occupied_minutes = completed_grp["actual_duration_min"].sum()
@@ -136,14 +140,24 @@ def compute_metrics(df: pd.DataFrame) -> UtilizationMetrics:
                 "n_scheduled": n_scheduled,
                 "n_completed": n_completed,
                 "n_cancelled": n_cancelled,
-                "cancellation_rate_pct": (n_cancelled / n_scheduled * 100.0) if n_scheduled else np.nan,
+                "cancellation_rate_pct": (
+                    (n_cancelled / n_scheduled * 100.0) if n_scheduled else np.nan
+                ),
                 "avg_start_delay_min": completed_grp["start_delay_min"].mean(),
                 "avg_overrun_min": completed_grp["overrun_min_clipped"].mean(),
-                "avg_turnaround_min": day_turnarounds["turnaround_min"].mean() if not day_turnarounds.empty else np.nan,
+                "avg_turnaround_min": (
+                    day_turnarounds["turnaround_min"].mean()
+                    if not day_turnarounds.empty
+                    else np.nan
+                ),
                 "total_overrun_min": completed_grp["overrun_min_clipped"].sum(),
             }
         )
-    daily_room_summary = pd.DataFrame(room_day_rows).sort_values(["room_id", "date"]).reset_index(drop=True)
+    daily_room_summary = (
+        pd.DataFrame(room_day_rows)
+        .sort_values(["room_id", "date"])
+        .reset_index(drop=True)
+    )
 
     # ---- Surgeon summary --------------------------------------------------
     surgeon_rows = []
@@ -157,19 +171,29 @@ def compute_metrics(df: pd.DataFrame) -> UtilizationMetrics:
                 "n_scheduled": n_scheduled,
                 "n_completed": completed_grp.shape[0],
                 "n_cancelled": n_cancelled,
-                "cancellation_rate_pct": (n_cancelled / n_scheduled * 100.0) if n_scheduled else np.nan,
+                "cancellation_rate_pct": (
+                    (n_cancelled / n_scheduled * 100.0) if n_scheduled else np.nan
+                ),
                 "avg_start_delay_min": completed_grp["start_delay_min"].mean(),
                 "avg_overrun_min": completed_grp["overrun_min_clipped"].mean(),
                 "avg_scheduled_duration_min": grp["scheduled_duration_min"].mean(),
                 "avg_actual_duration_min": completed_grp["actual_duration_min"].mean(),
                 "median_case_accuracy_pct": (
-                    (completed_grp["scheduled_duration_min"] / completed_grp["actual_duration_min"] * 100)
+                    (
+                        completed_grp["scheduled_duration_min"]
+                        / completed_grp["actual_duration_min"]
+                        * 100
+                    )
                     .replace([np.inf, -np.inf], np.nan)
                     .median()
                 ),
             }
         )
-    surgeon_summary = pd.DataFrame(surgeon_rows).sort_values("n_scheduled", ascending=False).reset_index(drop=True)
+    surgeon_summary = (
+        pd.DataFrame(surgeon_rows)
+        .sort_values("n_scheduled", ascending=False)
+        .reset_index(drop=True)
+    )
 
     # ---- Overall summary ----------------------------------------------
     total_block_minutes = daily_room_summary["block_minutes"].sum()
@@ -180,15 +204,28 @@ def compute_metrics(df: pd.DataFrame) -> UtilizationMetrics:
         "n_cases_completed": int(df["is_completed"].sum()),
         "n_cases_cancelled": int(df["is_cancelled"].sum()),
         "cancellation_rate_pct": float(df["is_cancelled"].mean() * 100.0),
-        "overall_utilization_pct": float(total_occupied_minutes / total_block_minutes * 100.0)
-        if total_block_minutes else np.nan,
+        "overall_utilization_pct": (
+            float(total_occupied_minutes / total_block_minutes * 100.0)
+            if total_block_minutes
+            else np.nan
+        ),
         "total_block_minutes": float(total_block_minutes),
         "total_occupied_minutes": float(total_occupied_minutes),
         "total_idle_minutes": float(daily_room_summary["idle_minutes"].sum()),
-        "avg_start_delay_min": float(df.loc[df["is_completed"], "start_delay_min"].mean()),
-        "avg_overrun_min": float(df.loc[df["is_completed"], "overrun_min_clipped"].mean()),
-        "avg_turnaround_min": float(turnaround_times["turnaround_min"].mean()) if not turnaround_times.empty else np.nan,
-        "pct_cases_overrun": float((df.loc[df["is_completed"], "overrun_min_clipped"] > 0).mean() * 100.0),
+        "avg_start_delay_min": float(
+            df.loc[df["is_completed"], "start_delay_min"].mean()
+        ),
+        "avg_overrun_min": float(
+            df.loc[df["is_completed"], "overrun_min_clipped"].mean()
+        ),
+        "avg_turnaround_min": (
+            float(turnaround_times["turnaround_min"].mean())
+            if not turnaround_times.empty
+            else np.nan
+        ),
+        "pct_cases_overrun": float(
+            (df.loc[df["is_completed"], "overrun_min_clipped"] > 0).mean() * 100.0
+        ),
     }
 
     return UtilizationMetrics(

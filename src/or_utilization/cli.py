@@ -19,8 +19,8 @@ import sys
 
 from .loader import load_schedule
 from .metrics import compute_metrics
-from .simulate import simulate_schedule_optimization
 from .report import generate_markdown_report
+from .simulate import simulate_schedule_optimization
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -33,20 +33,50 @@ def build_parser() -> argparse.ArgumentParser:
 
     analyze = sub.add_parser("analyze", help="Compute metrics and generate a report.")
     analyze.add_argument("--input", required=True, help="Path to schedule CSV.")
-    analyze.add_argument("--output-dir", default="reports/latest", help="Directory for the report + charts.")
-    analyze.add_argument("--json-summary", action="store_true", help="Print overall summary as JSON to stdout.")
+    analyze.add_argument(
+        "--output-dir",
+        default="reports/latest",
+        help="Directory for the report + charts.",
+    )
+    analyze.add_argument(
+        "--json-summary",
+        action="store_true",
+        help="Print overall summary as JSON to stdout.",
+    )
 
-    simulate = sub.add_parser("simulate", help="Run a schedule-optimization simulation and generate a report.")
+    simulate = sub.add_parser(
+        "simulate", help="Run a schedule-optimization simulation and generate a report."
+    )
     simulate.add_argument("--input", required=True, help="Path to schedule CSV.")
-    simulate.add_argument("--output-dir", default="reports/latest", help="Directory for the report + charts.")
-    simulate.add_argument("--turnaround-reduction", type=float, default=10.0,
-                           help="Minutes shaved off each turnaround gap. Default 10.")
-    simulate.add_argument("--start-delay-reduction-pct", type=float, default=25.0,
-                           help="Percent reduction applied to average start delay. Default 25.")
-    simulate.add_argument("--overrun-reduction-pct", type=float, default=25.0,
-                           help="Percent reduction applied to total overrun minutes. Default 25.")
-    simulate.add_argument("--avg-case-length-min", type=float, default=None,
-                           help="Override the average case length used to convert minutes to case counts.")
+    simulate.add_argument(
+        "--output-dir",
+        default="reports/latest",
+        help="Directory for the report + charts.",
+    )
+    simulate.add_argument(
+        "--turnaround-reduction",
+        type=float,
+        default=10.0,
+        help="Minutes shaved off each turnaround gap. Default 10.",
+    )
+    simulate.add_argument(
+        "--start-delay-reduction-pct",
+        type=float,
+        default=25.0,
+        help="Percent reduction applied to average start delay. Default 25.",
+    )
+    simulate.add_argument(
+        "--overrun-reduction-pct",
+        type=float,
+        default=25.0,
+        help="Percent reduction applied to total overrun minutes. Default 25.",
+    )
+    simulate.add_argument(
+        "--avg-case-length-min",
+        type=float,
+        default=None,
+        help="Override the average case length used to convert minutes to case counts.",
+    )
     simulate.add_argument("--scenario-name", default="custom_scenario")
     simulate.add_argument("--json-summary", action="store_true")
 

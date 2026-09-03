@@ -1,7 +1,5 @@
 import math
 
-import pytest
-
 from or_utilization.metrics import compute_metrics
 
 
