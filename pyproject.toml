@@ -7,7 +7,7 @@ name = "or-utilization-tool"
 version = "0.1.0"
 description = "Analyze operating room / procedure room scheduling data for utilization, delays, overruns, cancellations, and turnaround times, with a schedule-optimization simulator."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Aniketh Peruri" }]
 keywords = ["healthcare-analytics", "operating-room", "hospital-operations", "scheduling", "utilization"]
