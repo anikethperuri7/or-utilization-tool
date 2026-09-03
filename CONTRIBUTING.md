@@ -6,7 +6,7 @@ project, but PRs and issues are welcome.
 ## Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/or-utilization-tool.git
+git clone https://github.com/anikethperuri7/or-utilization-tool.git
 cd or-utilization-tool
 pip install -e ".[dev]"
 ```
