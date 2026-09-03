@@ -9,7 +9,7 @@ description = "Analyze operating room / procedure room scheduling data for utili
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Your Name" }]
+authors = [{ name = "Aniketh Peruri" }]
 keywords = ["healthcare-analytics", "operating-room", "hospital-operations", "scheduling", "utilization"]
 classifiers = [
     "Programming Language :: Python :: 3",
