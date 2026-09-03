@@ -18,9 +18,8 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Generated reports (keep the folder, ignore generated contents)
-reports/latest/
-!reports/.gitkeep
+# Generated reports
+# reports/latest is intentionally tracked as portfolio example output
 
 # OS
 .DS_Store
